@@ -1497,6 +1497,20 @@ function SettingsModal({onClose,onReset,userPhone,setUserPhone}){
             <input type="tel" value={userPhone} onChange={e=>setUserPhone(e.target.value)} placeholder="+1234567890 (with country code)" style={{flex:1,fontSize:10}}/>
           </div>
           <div style={{fontSize:9,color:'var(--t2)',marginTop:3}}>Include country code. Receives ViewOrb trade signals via SMS.</div>
+          <button className="btn" style={{marginTop:8,fontSize:10}} onClick={async()=>{
+            const phone=userPhone.trim();
+            if(!phone){alert('Enter your phone number first.');return;}
+            try{
+              const r=await fetch('/.netlify/functions/send-sms',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({to:phone,message:'VIEWORB: Test message — SMS alerts are working correctly.'})
+              });
+              const d=await r.json();
+              if(d.success)alert('Test SMS sent successfully!');
+              else alert('Failed: '+(d.error||'Unknown error'));
+            }catch(e){alert('Failed: '+e.message);}
+          }}>Send test SMS</button>
         </div>
         <div style={{fontSize:9,color:'var(--t2)',lineHeight:1.9,borderTop:'1px solid var(--bd)',paddingTop:12}}>
           <strong style={{color:'var(--t1)'}}>ViewOrb v1.2 — Phase 1</strong><br/>
